@@ -1,0 +1,23 @@
+machine:
+  timezone: UTC
+  ruby:
+    version: 2.3.0
+  services:
+    - docker
+
+dependencies:
+  pre:
+    - bundle install
+
+test:
+  pre:
+    - docker version
+    - docker info
+    - docker build -t ${CIRCLE_PROJECT_REPONAME} . :
+        timeout: 1200
+    - docker run ${CIRCLE_PROJECT_REPONAME} &
+    - sleep 5
+  override:
+    - bundle exec rspec
+    - docker ps -a
+    - docker images
